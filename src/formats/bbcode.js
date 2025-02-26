@@ -358,6 +358,7 @@
 			size;
 
 			if (!is(element, 'font') || !(fontSize = attr(element, 'size'))) {
+				element.style.fontSize = window.getComputedStyle(element).fontSize; // converts whatever into pixel units
 				if (attr(element, 'style').indexOf('px') > -1){
 					fontSize = css(element, 'font-size');
 					fontSize = fontSize.replace('px', '');
