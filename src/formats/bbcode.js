@@ -338,9 +338,10 @@
 				return '[font=' + _stripQuotes(font) + ']' +
 					content + '[/font]';
 			},
-			html: '<font face="{defaultattr}">{0}</font>'
+			html: '<span style="font-family:{defaultattr};">{0}</span>'
 		},
 		// END_COMMAND
+		
 		// START_COMMAND: Size
 		size: {
 			tags: {
