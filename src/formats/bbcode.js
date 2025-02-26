@@ -341,7 +341,6 @@
 			html: '<font face="{defaultattr}">{0}</font>'
 		},
 		// END_COMMAND
-
 		// START_COMMAND: Size
 		size: {
 			tags: {
@@ -349,47 +348,80 @@
 					size: null
 				}
 			},
-			styles: {
-				'font-size': null
-			},
-			format: function (element, content) {
-				var	fontSize = attr(element, 'size'),
-					size     = 2;
+		styles: {
+			'font-size': null
+		},
+		format: function (element, content) {
+			var fontSize,
+			pixels = false,
+			size;
 
-				if (!fontSize) {
-					fontSize = css(element, 'fontSize');
+			if (!is(element, 'font') || !(fontSize = attr(element, 'size'))) {
+				if (attr(element, 'style').indexOf('px') > -1){
+					fontSize = css(element, 'font-size');
+					fontSize = fontSize.replace('px', '');
+					pixels = true;
+				}else{
+					if (attr(element, 'style').indexOf('rem') > -1 || attr(element, 'style').indexOf('rem') == -1){
+					    fontSize = attr(element, 'style');
+					    fontSize = fontSize.replace('font-size:', '');
+					    fontSize = fontSize.replace('rem;', '');
+					}
 				}
-
-				// Most browsers return px value but IE returns 1-7
-				if (fontSize.indexOf('px') > -1) {
-					// convert size to an int
-					fontSize = fontSize.replace('px', '') - 0;
-
-					if (fontSize < 12) {
-						size = 1;
+			}else{
+				fontSize = attr(element, 'size');
+				fontSize = fontSize.replace('size', '');
+				fontSize = 'size ' + fontSize;
+			}
+				// the following nightmare i wrote here works the way i want it to but oh my god it's disgusting and it's giving me hives
+				// to fix later
+			switch(pixels){
+				case true:
+					pixels = false;
+					if(fontSize < 13){
+						size = '0.625rem';
+					}else if(fontSize >= 13 && fontSize < 16){
+					    	size = '0.8125rem';
+					}else if(fontSize >= 16 && fontSize < 18){
+					    	size = '1rem';
+					}else if(fontSize >= 18 && fontSize < 24){
+					    	size = '1.125rem';
+					}else if(fontSize >= 24 && fontSize < 32){
+					    	size = '1.5rem';
+					}else if(fontSize >= 32 && fontSize < 48){
+					    	size = '2rem';
+					}else if (fontSize >= 48){
+					    	size = '3rem';
+					}else{
+					    	size = '1rem';
 					}
-					if (fontSize > 15) {
-						size = 3;
+				break;
+				case false:
+					if (fontSize === 'size 1' || fontSize < 0.8125) {
+						size = '0.625rem';
+					}else if (fontSize === 'size 2' || (fontSize >= 0.8125 && fontSize < 1)) {
+					    	size = '0.8125rem';
+					}else if (fontSize === 'size 3' || (fontSize >= 1  && fontSize < 1.125)){
+						size = '1rem';
+					}else if (fontSize === 'size 4' || (fontSize >= 1.125 && fontSize < 1.5)) {
+					    	size = '1.125rem';
+					}else if (fontSize === 'size 5' || (fontSize >= 1.5 && fontSize < 2)) {
+					    	size = '1.5rem';
+					}else if (fontSize === 'size 6' || (fontSize >= 2 && fontSize < 3)) {
+					    	size = '2rem';
+					}else if (fontSize === 'size 7' || fontSize >= 3) {
+					    	size = '3rem';
+					}else{
+					    	size = '1rem';
 					}
-					if (fontSize > 17) {
-						size = 4;
-					}
-					if (fontSize > 23) {
-						size = 5;
-					}
-					if (fontSize > 31) {
-						size = 6;
-					}
-					if (fontSize > 47) {
-						size = 7;
-					}
-				} else {
-					size = fontSize;
+				break;
+				default:
+					size = '1rem';
 				}
-
+					// end of nightmare
 				return '[size=' + size + ']' + content + '[/size]';
 			},
-			html: '<font size="{defaultattr}">{!0}</font>'
+				html: '<span style="font-size:{defaultattr};">{!0}</span>'
 		},
 		// END_COMMAND
 
@@ -415,9 +447,9 @@
 					content + '[/color]';
 			},
 			html: function (token, attrs, content) {
-				return '<font color="' +
+				return '<span style="color: ' +
 					escapeEntities(_normaliseColour(attrs.defaultattr), true) +
-					'">' + content + '</font>';
+					';">' + content + '</span>';
 			}
 		},
 		// END_COMMAND
